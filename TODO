@@ -1,0 +1,14 @@
+
+Diseño:
+  ☐ Definir las páginas que se mostrarán en el historial.
+  ☐ La ventana del navegador podría ir centrada en la pantalla y el panel de controles afuera en el HTML/CSS.
+  ☐ Jugar con la relación JUEGO/NAVEGADOR >>> JS/HTML_CSS.
+Retroalimentación:
+  ✔ Que se lean las entradas del teclado. @done(19-08-25 20:26)
+  ☐ Que se renderice toda la ventana del navegador, con sus botones de atrás y toda la cosa.
+  ☐ Que al realizar una combinación de teclas se alumbre en el panel de controles.
+  ☐ Que no se acepten combinaciones de tres teclas.
+Programacha:
+  ☐ Que cada página sea un archivo JS.
+  ☐ Que el navegador sea un archivo JS.
+  ☐ Poner el llamado a una función update en cada GameObject.
