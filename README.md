@@ -11,3 +11,8 @@ A game about going back in the browsing history to gather information to save a 
 ## Features
 
 * An OLD PI...Is that a feature? (PI >> Player Interface >> User Interface).
+* Bad programming because is not my strength.
+
+## Based on the js13K-boilerplate made by ooflorent
+### (thanks!)
+https://github.com/shreyasminocha/js13k-boilerplate
