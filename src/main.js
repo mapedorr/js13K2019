@@ -1,7 +1,10 @@
 // strong palette: https://lospec.com/palette-list/fuzzyfour
+var game_state = {};
 var raf = require('./raf');
 var rng = require('./rng');
 var kbd = require('./keyboard');
+var brw = require('./browser');
+
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 var seed = 1;
@@ -21,39 +24,12 @@ function draw_desktop () {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function draw_browser () {
-  ctx.fillStyle = colors.B;
-  ctx.fillRect(16, 16, 560, 538);
-  ctx.strokeStyle = colors.W;
-  ctx.lineWidth = 4;
-  ctx.strokeRect(16, 16, 560, 538);
-  ctx.strokeStyle = colors.S;
-  ctx.strokeRect(580, 20, 1, 538);
-  ctx.strokeRect(20, 558, 561, 1);
-  ctx.fillStyle = colors.W;
-  ctx.fillRect(18, 10, 556, 26);
-  ctx.fillStyle = colors.B;
-  ctx.fillRect(513, 28, 16, 4);
-  ctx.fillRect(533, 16, 16, 16);
-  ctx.fillStyle = colors.W;
-  ctx.fillRect(535, 24, 12, 6);
-  ctx.beginPath();
-  ctx.lineWidth = 4;
-  ctx.moveTo(553, 17);
-  ctx.lineTo(567, 31);
-  ctx.moveTo(553, 31);
-  ctx.lineTo(567, 17);
-  ctx.strokeStyle = colors.B;
-  ctx.fill();
-  ctx.stroke();
-  ctx.closePath();
-}
-
 function draw_controls (x, y) {
   ctx.beginPath();
   ctx.fillStyle = colors.Y;
   ctx.fillRect(x, y, 183, 113)
   ctx.fillStyle = colors.B;
+  ctx.textAlign = 'left';
   txt.forEach(function (text, index) {
     ctx.fillText(text, x + 2, y + index * 18);
   });
@@ -62,46 +38,60 @@ function draw_controls (x, y) {
 function check_input () {
   dt += 1/60;
   if (dt > 0.25) {
-    if (kbd.keyPressed('left')) {
+    game_state.action = null;
+    if (kbd.keyPressed('ctrl')) {
       dt = 0;
-      console.log('left');
-    }
-
-    if (kbd.keyPressed('right')) {
-      dt = 0;
-      console.log('right');
-    }
-
-    if (kbd.keyPressed('up')) {
-      dt = 0;
-      console.log('up');
-    }
-
-    if (kbd.keyPressed('down')) {
-      dt = 0;
-      console.log('down');
+      if (kbd.keyPressed('left')) {
+        dt = 0;
+        game_state.action = 'back';
+      } else if (kbd.keyPressed('right')) {
+        dt = 0;
+        game_state.action = 'forward';
+      }
+    } else {
+      if (kbd.keyPressed('up') || kbd.keyPressed('left')) {
+        dt = 0;
+        game_state.action = 'prev';
+      } else if (kbd.keyPressed('down') || kbd.keyPressed('right')) {
+        dt = 0;
+        game_state.action = 'next';
+      }
     }
   }
 }
 
 function init() {
+  game_state = {
+    ctx: ctx,
+    colors: colors,
+    dft_fnt_styl: 'bold 14px/18px Courier New',
+    page: 13,
+    action: null
+  };
+  var game_objects = [];
+
   kbd.init();
 
   // font formal syntax >> font-style font-weight font-stretch font-size/line-height font-family
-  ctx.font = 'bold 14px/18px Courier New';
-  ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
+
+  // init the browser and the pages
+  game_objects.push(brw(game_state));
 
   raf.start(function(elapsed) {
     // Clear the screen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-    // check keyboard events
+    // set default font values
+    ctx.font = game_state.dft_fnt_styl;
+    ctx.textAlign = 'left';
+    // check keyboard input
     check_input();
-  
     // render the game objects
-    draw_browser();
+    draw_desktop();
     draw_controls(600, 228);
+    for (i = 0; i < game_objects.length; i++) {
+      game_objects[i].render(game_state);
+    }
   });
 }
 
